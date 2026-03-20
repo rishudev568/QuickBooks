@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QuickBooks Desktop Pro Plus 2024 — Module Architecture Explorer</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f5f4f0;color:#2c2c2c;min-height:100vh}
+.header{background:linear-gradient(135deg,#1B2A4A,#2B5797);color:#fff;padding:28px 32px 24px;position:sticky;top:0;z-index:100}
+.header h1{font-size:22px;font-weight:600;margin:0 0 4px}
+.header p{font-size:13px;opacity:0.75;margin:0}
+.header .badge{display:inline-block;background:#4CAF50;color:#fff;font-size:11px;font-weight:600;padding:3px 10px;border-radius:10px;margin-left:10px;vertical-align:middle}
+.container{max-width:1100px;margin:0 auto;padding:20px 24px 40px}
+.legend{display:flex;gap:16px;margin:0 0 16px;flex-wrap:wrap;align-items:center}
+.legend span{font-size:12px;color:#666;display:flex;align-items:center;gap:5px}
+.dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:0 0 20px}
+.stat-card{background:#fff;border:1px solid #e0deda;border-radius:10px;padding:14px 16px;text-align:center}
+.stat-card .num{font-size:28px;font-weight:700;color:#2E7D32}
+.stat-card .label{font-size:11px;color:#888;margin-top:2px;text-transform:uppercase;letter-spacing:0.5px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin:0 0 16px}
+.mod{background:#fff;border:1.5px solid #e0deda;border-radius:10px;padding:12px 14px;cursor:pointer;transition:all 0.15s;position:relative;overflow:hidden}
+.mod:hover{border-color:#aaa;transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,0.06)}
+.mod.active{border-color:#534AB7;border-width:2px;box-shadow:0 4px 16px rgba(83,74,183,0.15)}
+.mod .accent{position:absolute;top:0;left:0;right:0;height:3px}
+.mod h3{font-size:13px;font-weight:600;margin:0 0 3px;display:flex;align-items:center;gap:6px}
+.mod .cat{font-size:11px;color:#888;margin:0}
+.mod .counts{display:flex;gap:8px;margin-top:6px}
+.mod .count-badge{font-size:10px;background:#f0eeea;padding:2px 8px;border-radius:6px;color:#666}
+.detail{background:#fff;border:1.5px solid #e0deda;border-radius:12px;padding:24px 28px;margin-top:16px;animation:slideIn 0.2s ease}
+@keyframes slideIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.detail h2{font-size:20px;font-weight:600;margin:0 0 2px;display:flex;align-items:center;gap:8px}
+.detail .sub{font-size:13px;color:#888;margin:0 0 16px}
+.section-title{font-size:14px;font-weight:600;color:#1B2A4A;margin:20px 0 10px;padding-bottom:6px;border-bottom:2px solid #e0deda;display:flex;align-items:center;gap:8px}
+.section-title .count{background:#e0deda;font-size:11px;padding:2px 8px;border-radius:8px;font-weight:500;color:#666}
+.feat-grid{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.feat{font-size:13px;color:#444;padding:8px 12px;border-bottom:1px solid #f0eeea;line-height:1.5;display:flex;align-items:flex-start;gap:8px}
+.feat::before{content:"";display:block;width:6px;height:6px;border-radius:50%;background:#2E7D32;flex-shrink:0;margin-top:6px}
+.conn-section{margin-top:6px}
+.conn-grid{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:6px}
+.pill{font-size:12px;padding:5px 12px;border-radius:8px;background:#f0eeea;color:#555;cursor:pointer;border:1px solid #e0deda;transition:all 0.15s;display:inline-flex;align-items:center;gap:6px}
+.pill:hover{background:#e3f2fd;color:#1565C0;border-color:#90caf9}
+.pill .arrow-label{font-size:10px;color:#aaa;font-style:italic}
+.pill .arrow-icon{font-size:10px;color:#aaa}
+.empty-state{text-align:center;padding:40px 20px;color:#aaa;font-size:14px}
+.empty-state .icon{font-size:40px;margin-bottom:12px;opacity:0.3}
+.inbound-pill{background:#fff3e0}
+.inbound-pill:hover{background:#ffe0b2;color:#e65100;border-color:#ffb74d}
+.footer{text-align:center;padding:24px;font-size:11px;color:#aaa;border-top:1px solid #e0deda;margin-top:32px}
+@media(max-width:768px){
+.feat-grid{grid-template-columns:1fr}
+.stats-bar{grid-template-columns:repeat(2,1fr)}
+.grid{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+<h1>QuickBooks Desktop Pro Plus 2024 <span class="badge">Architecture Explorer</span></h1>
+<p>Interactive module map — click any module to explore features and cross-module data relationships</p>
+</div>
+
+<div class="container">
+<div class="stats-bar">
+<div class="stat-card"><div class="num">15</div><div class="label">Total Modules</div></div>
+<div class="stat-card"><div class="num" id="total-features">0</div><div class="label">Total Features</div></div>
+<div class="stat-card"><div class="num" id="total-connections">0</div><div class="label">Data Connections</div></div>
+<div class="stat-card"><div class="num">5</div><div class="label">Module Types</div></div>
+</div>
+
+<div class="legend">
+<span><span class="dot" style="background:#534AB7"></span>Dashboard</span>
+<span><span class="dot" style="background:#185FA5"></span>Center</span>
+<span><span class="dot" style="background:#BA7517"></span>Tracker</span>
+<span><span class="dot" style="background:#0F6E56"></span>Tool</span>
+<span><span class="dot" style="background:#993C1D"></span>Form</span>
+<span style="margin-left:auto;font-size:11px;color:#aaa">Click any module card below ↓</span>
+</div>
+
+<div class="grid" id="grid"></div>
+<div id="detail-area"></div>
+
+<div class="footer">
+QuickBooks Desktop Pro Plus 2024 — Module Architecture & Feature Map<br>
+Confidential — Prepared for Client Review
+</div>
+</div>
+
+<script>
+const modules = [
+{id:"home",name:"Home page",cat:"Dashboard",color:"#534AB7",
+features:["Visual workflow swimlanes (Vendors, Customers, Employees)","Clickable icons open transaction forms directly","Company shortcuts panel (Chart of Accounts, Items & Services, Order Checks, Calendar)","Banking section (Record Deposits, Reconcile, Write Checks, Check Register, Print Checks)","Home Page / Insights tab toggle","Quick-access to all major workflows in one view"],
+connections:[{to:"invoices",label:"opens"},{to:"bills",label:"opens"},{to:"checks",label:"opens"},{to:"customers",label:"navigates"},{to:"vendors",label:"navigates"},{to:"employees",label:"navigates"},{to:"accounts",label:"navigates"},{to:"calendar",label:"navigates"},{to:"banking",label:"navigates"}]},
+
+{id:"mycompany",name:"My Company",cat:"Dashboard",color:"#534AB7",
+features:["Company Information (Contact Name & Address, Legal Name & Address)","Phone, Fax, Email, Website fields","EIN, SSN, Income Tax Form display","Payroll Contact information","Product Information (Product Name, License #, Product #, Seats, Activation)","Manage Your Account link + Order/Payment History, Authorized Users","Payment Methods + Account Details links","Apps, Services & Subscriptions with recommendations (Advanced Inventory, Intuit Data Protect, App Center)"],
+connections:[{to:"accounts",label:"links to"},{to:"employees",label:"payroll contact"},{to:"home",label:"sidebar nav"}]},
+
+{id:"cashflow",name:"Cash Flow Hub",cat:"Dashboard",color:"#534AB7",
+features:["Bank account balances with expandable list","Credit card balances display","Loan account balances display","Payroll Liabilities with amounts","Bar chart showing cash trend over time","Manage Accounts link → Chart of Accounts","Money In section with Upcoming / Paid tabs","Type, Qty, Amount, Actions columns in Money In","Overdue Invoices row with Send Reminder action","Open Invoices row with View action","Money Out section with Upcoming / Paid tabs","Create Invoice shortcut link","View Reports dropdown"],
+connections:[{to:"accounts",label:"reads balances"},{to:"income_tracker",label:"feeds invoice data"},{to:"bill_tracker",label:"feeds bill data"},{to:"invoices",label:"create invoice"},{to:"banking",label:"bank balances"}]},
+
+{id:"income_tracker",name:"Income Tracker",cat:"Tracker",color:"#BA7517",
+features:["Unbilled bar: Estimates count + Time & Expenses count (green)","Unpaid bar: Open Invoices + Overdue count (orange/red)","Paid bar: Paid Last 30 Days count (yellow)","Filter: Customer:Job dropdown","Filter: Type (Invoices) dropdown","Filter: Status (Open) dropdown","Filter: Date (This Week) with range picker","Transaction grid: checkbox, Customer, Type, Number, Date, Due Date, Amount","Grid columns: Open Balance, Last Sent Date, Status, Action","Batch Actions dropdown for bulk operations","Manage Transactions dropdown","Pagination: Showing X of Y with navigation","TOTAL row at bottom","Clear / Show All filter reset button"],
+connections:[{to:"customers",label:"customer data"},{to:"invoices",label:"invoice records"},{to:"cashflow",label:"feeds summary"},{to:"reports",label:"A/R reports"},{to:"snapshots",label:"feeds widgets"}]},
+
+{id:"bill_tracker",name:"Bill Tracker",cat:"Tracker",color:"#BA7517",
+features:["Unpaid bar: Open Bills count + Overdue count (orange/red)","Paid bar: Paid in Last 30 Days count (yellow)","Filter: Vendor dropdown","Filter: Type dropdown","Filter: Status dropdown","Filter: Date dropdown","Filter: Group By dropdown","Transaction grid: checkbox, Vendor, Type, Number, Date","Grid columns: Due Date, Status, Amount, Open Balance, Action","Batch Actions dropdown","Manage Transactions dropdown","Pagination with record count","TOTAL row at bottom"],
+connections:[{to:"vendors",label:"vendor data"},{to:"bills",label:"bill records"},{to:"cashflow",label:"feeds summary"},{to:"reports",label:"A/P reports"},{to:"snapshots",label:"feeds widgets"}]},
+
+{id:"calendar",name:"Calendar",cat:"Dashboard",color:"#534AB7",
+features:["Full month grid view (Sunday through Saturday)","Today highlighted in green block","Month/Year navigation with back/forward arrows","Today button for quick jump to current date","Day / Week / Month view toggle buttons","Select a Date calendar picker","SHOW filter: All Transactions dropdown","Upcoming: Next 7 Days sidebar with TO DO count and TRANSACTIONS count","Due: Past 60 Days sidebar with TO DO count and TRANSACTIONS count","Add To Do link at bottom of calendar","Transaction dots overlaid on calendar dates","Bottom detail area shows selected date's To Do's and Transactions","Date display (e.g., March 20, 2026) with ellipsis menu"],
+connections:[{to:"invoices",label:"due dates"},{to:"bills",label:"due dates"},{to:"home",label:"sidebar nav"},{to:"income_tracker",label:"invoice dates"},{to:"bill_tracker",label:"bill dates"}]},
+
+{id:"snapshots",name:"Snapshots",cat:"Dashboard",color:"#534AB7",
+features:["3 tabs: Company, Payments, Customer","Income and Expense Trend chart with date filter","Prev Year Income Comparison chart (category + yearly view)","Customers Who Owe Money table (Customer, Due Date, Amt Due)","Receive Payments action link","Account Balances panel (Account, Balance) with links","Select Accounts + Go to Chart of Accounts links","Top Customers by Sales chart with date filter","Prev Year Expense Comparison chart","Expense Breakdown chart","Add Content + Restore Default customization links","All widgets have close (X) and collapse (▾) controls","Search bar in top right corner"],
+connections:[{to:"customers",label:"customer balances"},{to:"accounts",label:"account balances"},{to:"income_tracker",label:"invoice data"},{to:"bill_tracker",label:"bill data"},{to:"reports",label:"same data source"},{to:"cashflow",label:"parallel view"}]},
+
+{id:"customers",name:"Customer Center",cat:"Center",color:"#185FA5",
+features:["Toolbar: New Customer & Job dropdown","Toolbar: New Transactions dropdown","Toolbar: Print, Excel, Word export buttons","Toolbar: Income Tracker quick link","Customers & Jobs / Transactions tab toggle","Active Customers dropdown filter","Search bar with magnifying glass icon","Customer list: Name, Balance Tot., Attach columns","Customer Information: Company Name, Full Name, Bill To","Edit (pencil) icons on detail fields","NOTE section with edit capability","Reports For This Customer section","Tab: Transactions with filters (SHOW, FILTER BY, DATE)","Tab: Contacts","Tab: To Do's","Tab: Notes","Tab: Sent Email","Transaction grid: Type, Num, Date, Account, Amount columns","Manage Transactions dropdown at bottom","Run Reports dropdown at bottom"],
+connections:[{to:"invoices",label:"create invoice"},{to:"income_tracker",label:"feeds data"},{to:"cashflow",label:"A/R balances"},{to:"reports",label:"customer reports"},{to:"snapshots",label:"top customers"}]},
+
+{id:"vendors",name:"Vendor Center",cat:"Center",color:"#185FA5",
+features:["Toolbar: New Vendor dropdown","Toolbar: New Transactions dropdown","Toolbar: Print, Excel, Word export buttons","Toolbar: Bill Tracker quick link","Vendors / Transactions tab toggle","Active Vendors dropdown filter","Search bar","Vendor list: Name, Balance Tot., Attach columns","Vendor Information: Company Name, Full Name, Billed From","NOTE section with edit capability","Reports For This Vendor: Order 1099 Forms","Reports For This Vendor: Order Checks","Tab: Transactions with filters","Tab: Contacts","Tab: To Do's","Tab: Notes","Tab: Sent Email","Transaction grid: Type, Num, Date, Account, Amount","Manage Transactions + Run Reports at bottom","Schedule Online Payment button"],
+connections:[{to:"bills",label:"create bill"},{to:"bill_tracker",label:"feeds data"},{to:"cashflow",label:"A/P balances"},{to:"reports",label:"vendor reports"},{to:"checks",label:"order checks"}]},
+
+{id:"employees",name:"Employee Center",cat:"Center",color:"#185FA5",
+features:["Toolbar: New Employee button","Toolbar: Manage Employee Information dropdown","Toolbar: Print, Enter Time, Excel, Word buttons","Employees / Transactions tab toggle","Active Employees filter dropdown","Employee list: Name, Attach columns","Employee Information: Full Name, Address display","NOTE section with edit","Reports For This Employee section","Turn on Payroll link","Tab: Transactions with filters (SHOW, DATE)","Tab: To Do's","Tab: Notes","Tab: Sent Email","Transaction grid: Transaction Type, Date, Account, Amount"],
+connections:[{to:"reports",label:"payroll reports"},{to:"cashflow",label:"payroll liabilities"},{to:"home",label:"payroll section"}]},
+
+{id:"banking",name:"Bank Feeds",cat:"Tool",color:"#0F6E56",
+features:["Automated bank transaction import","Transaction matching against existing QB records","Smart rules-based automatic categorization","Bulk editing of multiple transactions at once","Unmatched transaction review queue with alerts","Account categorization dropdowns per transaction","Match / Add / Transfer action buttons","Reconciliation form: Account selector","Reconciliation: Statement Date picker","Reconciliation: Beginning Balance (auto-filled)","Reconciliation: Ending Balance input","Check register view per account","Transaction search and filter capabilities"],
+connections:[{to:"accounts",label:"updates balances"},{to:"cashflow",label:"bank balances"},{to:"checks",label:"check clearing"},{to:"reports",label:"banking reports"},{to:"invoices",label:"payment matching"},{to:"bills",label:"payment matching"}]},
+
+{id:"docs",name:"Doc Center",cat:"Tool",color:"#0F6E56",
+features:["Add Document button (upload from computer)","Add Document from Mobile (QuickBooks Desktop mobile app)","Drag-and-drop upload zone (from Outlook, desktop, folders)","Document table: Name column","Document table: Description column","Document table: Added date column","Document table: Attached To column (links to transactions)","Search bar for finding documents","View Details button","Open button","Remove button","Close button","Update Search Information link"],
+connections:[{to:"invoices",label:"attach to invoices"},{to:"bills",label:"attach to bills"},{to:"customers",label:"attach to customers"},{to:"vendors",label:"attach to vendors"}]},
+
+{id:"reports",name:"Report Center",cat:"Tool",color:"#0F6E56",
+features:["Standard tab — browse all report categories","Memorized tab — saved custom reports","Favorites tab — quick-access starred reports","Recent tab — last opened reports","Contributed tab — shared/community reports","Category: Company & Financial (P&L Standard, Detail, YTD, Prev Year, by Job, by Class)","Category: Customers & Receivables (A/R Aging Summary/Detail, Customer Balance, Open Invoices)","Category: Sales (by Customer, by Item, by Rep)","Category: Jobs, Time & Mileage","Category: Vendors & Payables (A/P Aging, Vendor Balance, Unpaid Bills)","Category: Employees & Payroll (Payroll Summary, Employee Earnings)","Category: Banking (Check Detail, Deposit Detail, Missing Checks)","Category: Accountant & Taxes (Trial Balance, Journal, Audit Trail)","Category: Budgets (Budget Overview, Budget vs Actual)","Report preview thumbnails with SAMPLE watermark","Dates filter per report with presets","Favorite / Share / Help icons per report","Search bar for finding reports by name"],
+connections:[{to:"accounts",label:"reads general ledger"},{to:"customers",label:"A/R data"},{to:"vendors",label:"A/P data"},{to:"employees",label:"payroll data"},{to:"banking",label:"bank data"},{to:"income_tracker",label:"same source"},{to:"bill_tracker",label:"same source"}]},
+
+{id:"accounts",name:"Chart of Accounts",cat:"Tool",color:"#0F6E56",
+features:["Full account listing with Name, Type, Balance Total columns","Account type: Bank","Account type: Accounts Receivable","Account type: Other Current Asset","Account type: Fixed Asset","Account type: Accounts Payable","Account type: Credit Card","Account type: Other Current Liability","Account type: Equity","Account type: Income","Account type: Cost of Goods Sold","Account type: Expense","New Account button for creating accounts","Filter by account type dropdown","Account number display column","Double-click to open account register","Include Inactive toggle checkbox","Sort by any column header"],
+connections:[{to:"reports",label:"general ledger source"},{to:"cashflow",label:"account balances"},{to:"snapshots",label:"balance widgets"},{to:"banking",label:"reconciliation"},{to:"invoices",label:"income accounts"},{to:"bills",label:"expense accounts"},{to:"checks",label:"expense accounts"}]},
+
+{id:"invoices",name:"Create Invoice",cat:"Form",color:"#993C1D",
+features:["Customer:Job dropdown with search","Template selection (Intuit Product, Custom, Professional)","Date picker with calendar popup","Invoice # auto-increment field","Bill To address block (auto-fills from customer record)","Ship To address block","Terms dropdown (Net 30, Net 15, Net 60, Due on Receipt)","Due Date auto-calculated from terms","P.O. Number field","Line-item grid: Item column with dropdown","Line-item grid: Description column","Line-item grid: Qty column","Line-item grid: Rate column","Line-item grid: Amount column (auto-calculated)","Line-item grid: Tax column","Add new line rows dynamically","Subtotal auto-calculation","Tax calculation","Total calculation","Memo field","Customer Message dropdown","Apply Credits button","Save & Close button","Save & New button","Clear button","Revert button","Toolbar: Print, Email, Find actions"],
+connections:[{to:"customers",label:"reads customer data"},{to:"income_tracker",label:"creates invoice records"},{to:"accounts",label:"debits A/R, credits Income"},{to:"cashflow",label:"updates Money In"},{to:"reports",label:"P&L and A/R reports"},{to:"calendar",label:"due date entry"}]},
+
+{id:"bills",name:"Enter Bills",cat:"Form",color:"#993C1D",
+features:["Vendor dropdown with search","Date picker with calendar popup","Ref. No. field","Terms dropdown","Due Date auto-calculated from terms","Amount Due display field","Expenses tab: Account dropdown column","Expenses tab: Amount column","Expenses tab: Memo column","Expenses tab: Customer:Job column","Items tab: Item dropdown column","Items tab: Description column","Items tab: Qty column","Items tab: Cost column","Items tab: Amount column (auto-calculated)","Items tab: Customer:Job column","Add new line rows dynamically","Memo field","Clear Splits button","Recalculate button","Save & Close button","Save & New button","Clear and Revert buttons"],
+connections:[{to:"vendors",label:"reads vendor data"},{to:"bill_tracker",label:"creates bill records"},{to:"accounts",label:"debits Expense, credits A/P"},{to:"cashflow",label:"updates Money Out"},{to:"reports",label:"P&L and A/P reports"},{to:"calendar",label:"due date entry"}]},
+
+{id:"checks",name:"Write Checks",cat:"Form",color:"#993C1D",
+features:["Bank Account selector with ending balance display","Pay to the Order of dropdown with search","Check # auto-increment field","Date picker with calendar popup","Amount field (large, prominent display)","Address auto-fill from payee record","Expenses tab: Account dropdown column","Expenses tab: Amount column","Expenses tab: Memo column","Expenses tab: Customer:Job column","Items tab: Item, Description, Qty, Cost, Amount, Customer:Job","Print Later checkbox toggle","Online Payment toggle","Save & Close button","Save & New button","Clear and Revert buttons"],
+connections:[{to:"vendors",label:"payee data"},{to:"accounts",label:"debits Expense, credits Bank"},{to:"banking",label:"updates bank register"},{to:"cashflow",label:"reduces bank balance"},{to:"reports",label:"check detail report"}]}
+];
+
+const nameMap = {};
+modules.forEach(m => nameMap[m.id] = m.name);
+
+let totalFeatures = 0;
+let totalConns = 0;
+modules.forEach(m => { totalFeatures += m.features.length; totalConns += m.connections.length; });
+document.getElementById("total-features").textContent = totalFeatures;
+document.getElementById("total-connections").textContent = totalConns;
+
+let activeId = null;
+
+function render() {
+  const grid = document.getElementById("grid");
+  grid.innerHTML = "";
+  modules.forEach(m => {
+    const d = document.createElement("div");
+    d.className = "mod" + (activeId === m.id ? " active" : "");
+    d.innerHTML = `
+      <div class="accent" style="background:${m.color}"></div>
+      <h3><span class="dot" style="background:${m.color}"></span>${m.name}</h3>
+      <p class="cat">${m.cat}</p>
+      <div class="counts">
+        <span class="count-badge">${m.features.length} features</span>
+        <span class="count-badge">${m.connections.length} outbound</span>
+      </div>`;
+    d.onclick = () => { activeId = activeId === m.id ? null : m.id; render(); if(activeId) document.getElementById("detail-area").scrollIntoView({behavior:"smooth",block:"nearest"}); };
+    grid.appendChild(d);
+  });
+
+  const area = document.getElementById("detail-area");
+  if (!activeId) {
+    area.innerHTML = `<div class="empty-state"><div class="icon">⬆</div>Click any module card above to explore its features,<br>outbound data flows, and inbound dependencies</div>`;
+    return;
+  }
+
+  const m = modules.find(x => x.id === activeId);
+
+  const inbound = [];
+  modules.forEach(other => {
+    if (other.id === m.id) return;
+    other.connections.forEach(c => {
+      if (c.to === m.id) inbound.push({ from: other, label: c.label });
+    });
+  });
+
+  let featHTML = m.features.map(f => `<div class="feat">${f}</div>`).join("");
+  let outHTML = m.connections.map(c => {
+    const target = modules.find(x => x.id === c.to);
+    return `<span class="pill" onclick="activeId='${c.to}';render();this.closest('.container').querySelector('#detail-area').scrollIntoView({behavior:'smooth',block:'nearest'})"><span class="arrow-icon">→</span> ${target ? target.name : c.to}<span class="arrow-label">${c.label}</span></span>`;
+  }).join("");
+  let inHTML = inbound.map(ib => `<span class="pill inbound-pill" onclick="activeId='${ib.from.id}';render();this.closest('.container').querySelector('#detail-area').scrollIntoView({behavior:'smooth',block:'nearest'})"><span class="arrow-icon">←</span> ${ib.from.name}<span class="arrow-label">${ib.label}</span></span>`).join("");
+
+  area.innerHTML = `<div class="detail">
+    <h2><span class="dot" style="background:${m.color}"></span>${m.name}</h2>
+    <p class="sub">${m.cat} module · ${m.features.length} features · ${m.connections.length} outbound · ${inbound.length} inbound</p>
+
+    <div class="section-title">Features <span class="count">${m.features.length}</span></div>
+    <div class="feat-grid">${featHTML}</div>
+
+    <div class="conn-section">
+      <div class="section-title">Sends data to <span class="count">${m.connections.length} modules</span></div>
+      <div class="conn-grid">${outHTML || '<span style="font-size:13px;color:#aaa">No outbound connections</span>'}</div>
+    </div>
+
+    <div class="conn-section">
+      <div class="section-title">Receives data from <span class="count">${inbound.length} modules</span></div>
+      <div class="conn-grid">${inHTML || '<span style="font-size:13px;color:#aaa">No inbound connections</span>'}</div>
+    </div>
+  </div>`;
+}
+
+render();
+</script>
+</body>
+</html>
